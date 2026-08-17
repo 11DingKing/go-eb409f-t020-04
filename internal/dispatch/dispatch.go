@@ -82,6 +82,8 @@ func (o *Orchestrator) Parts() *parts.Inventory { return o.parts }
 
 // Notifications returns a copy of all notifications.
 func (o *Orchestrator) Notifications() []*Notification {
+	o.mu.Lock()
+	defer o.mu.Unlock()
 	out := make([]*Notification, len(o.notifs))
 	copy(out, o.notifs)
 	return out
