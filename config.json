@@ -1,0 +1,7 @@
+{
+  "port": 58295,
+  "store_path": "data/state.json",
+  "maintenance_timeout": "5m",
+  "anomaly_report_deadline": "10m",
+  "scheduler_interval": "2s"
+}
