@@ -81,7 +81,16 @@ func (o *Orchestrator) Orders() *workorder.Manager { return o.orders }
 func (o *Orchestrator) Parts() *parts.Inventory { return o.parts }
 
 // Notifications returns a copy of all notifications.
+//
+// Every notification-producing operation appends to o.notifs under o.mu, so the
+// reader must hold the same lock. Without it, a concurrent append can reallocate
+// the slice header mid-read: len() and copy() observe different (pointer, len)
+// pairs, which the race detector flags as a data race and can surface as a nil
+// entry handed to the caller. Locking here yields a consistent snapshot and
+// guarantees no notification is lost or seen partially initialized.
 func (o *Orchestrator) Notifications() []*Notification {
+	o.mu.Lock()
+	defer o.mu.Unlock()
 	out := make([]*Notification, len(o.notifs))
 	copy(out, o.notifs)
 	return out
